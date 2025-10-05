@@ -1,0 +1,1 @@
+Architecture is modular mono repo
