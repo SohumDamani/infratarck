@@ -1,0 +1,21 @@
+# Python cache and compiled files
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Virtual environments
+venv/
+.env
+
+# Docker volumes and logs
+pgdata/
+*.log
+
+# macOS system files
+.DS_Store
+
+# Node/React (frontend)
+node_modules/
+dist/
+build/
+
