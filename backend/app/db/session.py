@@ -1,26 +1,26 @@
 from sqlalchemy import create_engine
+from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
-from dotenv import load_dotenv
 import os
 
-# Load environment variables
+# Load the database URL from environment variable (set in docker-compose.yml)
+DATABASE_URL = os.getenv("DATABASE_URL")
 
-load_dotenv()
+# Create the SQLAlchemy engine (talks to PostgreSQL)
+engine = create_engine(DATABASE_URL)
 
-DatabaseURL = os.getenv("DATABASE_URL")
-DB_USER = os.getenv("POSTGRES_USER")
-DB_PASS = os.getenv("POSTGRES_PASSWORD")
-DB_NAME = os.getenv("POSTGRES_DB")
-DB_HOST = os.getenv("POSTGRES_HOST", "db")   # default = 'db' (service name)
-DB_PORT = os.getenv("POSTGRES_PORT", "5432")
-# Load environment variables
-engine = create_engine(os.getenv("DATABASE_URL"))
-
-# Load environment variables
+# Create a configured "Session" class
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+# Base class for all ORM models (this is the declarative_base we discussed)
+Base = declarative_base()
 
 # Dependency for FastAPI routes
 def get_db():
+    """
+    Creates a new SQLAlchemy session for each request,
+    ensures it's closed after the request finishes.
+    """
     db = SessionLocal()
     try:
         yield db

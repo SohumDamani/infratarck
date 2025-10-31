@@ -1,17 +1,14 @@
-from sqlalchemy import Column, Integer, String, Float
-from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy import Column, Integer, String, Float, UniqueConstraint
+from .session import Base  # ✅ Import Base from session.py
 
-# Step 1: Define Base (to be inherited by all models)
-Base = declarative_base()
-
-# Step 2: Define Asset model
 class Asset(Base):
-    # used to keep track of different cloud infrastructure asstes like servers, VM , Containers
-    __tablename__ = "assets"  # This table will be created in the database
+    __tablename__ = "assets"
 
-    # Step 3: Define columns in the table
-    id = Column(Integer, primary_key=True, index=True)  # Primary key
-    name = Column(String, index=True)  # Asset name
-    category = Column(String)  # Asset category
-    price = Column(Float)  # Asset price
-    quantity = Column(Integer)  # Asset quantity in stock
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    name = Column(String, nullable=False)
+    category = Column(String, nullable=False)
+    price = Column(Float, nullable=False)
+    quantity = Column(Integer, nullable=False)
+
+    # Ensure each (name, category) pair is unique
+    __table_args__ = (UniqueConstraint("name", "category", name="_name_category_uc"),)
