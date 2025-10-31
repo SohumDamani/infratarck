@@ -4,3 +4,8 @@ sqlalchemy
 psycopg2-binary
 python-dotenv
 
+# Development tools
+black
+isort
+flake8
+
