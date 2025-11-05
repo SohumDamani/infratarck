@@ -29,3 +29,44 @@ def create_asset(payload: AssetCreate, db: Session = Depends(get_db)):
 def get_assets(db: Session = Depends(get_db)):
     assets = db.query(Asset).all()  # Query all assets in the database
     return assets  # Return the list of assets
+
+@router.put("/assets/{id}", response_model=AssetRead)
+def update_asset(id: int, payload: AssetCreate, db: Session = Depends(get_db)):
+    # Find the asset by id
+    asset_to_update = db.query(Asset).filter(Asset.id == id).first()
+
+    if not asset_to_update:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Asset not found"
+        )
+
+    # Update the asset fields
+    asset_to_update.name = payload.name
+    asset_to_update.category = payload.category
+    asset_to_update.price = payload.price
+    asset_to_update.quantity = payload.quantity
+
+    # Commit changes
+    db.commit()
+    db.refresh(asset_to_update)
+
+    return asset_to_update 
+
+@router.delete("/assets/{id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_asset(id: int, db: Session = Depends(get_db)):
+    # Find the asset by id
+    #.first() is still neded even toh id is unique to return one object or None.
+    asset_to_delete = db.query(Asset).filter(Asset.id == id).first()
+
+    if not asset_to_delete:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Asset not found"
+        )
+
+    db.delete(asset_to_delete)
+    db.commit()
+
+    # Return nothing, but HTTP 204 will signal success
+    return None
