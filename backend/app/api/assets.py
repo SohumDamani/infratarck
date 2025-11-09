@@ -30,6 +30,7 @@ def get_assets(db: Session = Depends(get_db)):
     assets = db.query(Asset).all()  # Query all assets in the database
     return assets  # Return the list of assets
 
+# Update an existing asset (PUT method)
 @router.put("/assets/{id}", response_model=AssetRead)
 def update_asset(id: int, payload: AssetCreate, db: Session = Depends(get_db)):
     # Find the asset by id
@@ -53,6 +54,21 @@ def update_asset(id: int, payload: AssetCreate, db: Session = Depends(get_db)):
 
     return asset_to_update 
 
+# Get a single asset by ID (GET method)
+@router.get("/assets/{id}", response_model=AssetRead)
+def get_asset_by_id(id: int, db: Session = Depends(get_db)):
+    # Find the asset by id
+    asset = db.query(Asset).filter(Asset.id == id).first()
+
+    if not asset:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Asset not found"
+        )
+
+    return asset
+
+# Delete an asset (DELETE method)
 @router.delete("/assets/{id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_asset(id: int, db: Session = Depends(get_db)):
     # Find the asset by id
